@@ -1,11 +1,12 @@
-#install.packages("dplyr");
 library("dplyr");
 library("stats");
 library("readr");
 
 sample <- read_csv("input/sample_107.csv")
+
 #размер выборки
 N <- 107
+
 #количество интервалов
 numClass <- 1 + floor(log2(N))
 
