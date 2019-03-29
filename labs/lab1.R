@@ -2,39 +2,43 @@ library("dplyr");
 library("stats");
 library("readr");
 
+# входные данные
+
+# задаем размер выборки
+N <- 107
+# считываем файл с выборкой
 sample <- read_csv("input/sample_107.csv")
 
-#размер выборки
-N <- 107
+# -------------------
 
-#количество интервалов
+# рассчитываем количество интервалов
 numClass <- 1 + floor(log2(N))
 
-#ранжированные тибблы
+# ранжированные таблицы
 a <- arrange(sample, v)
 b <- arrange(sample, E)
 
-#ранжированные массивы
+# ранжированные массивы
 v <- a[[1]]
 e <- b[[2]]
 
-#вариационные ряды
+# вариационные ряды
 vStat <- count(a, v)
 eStat <- count(b, E)
 
-#размах выборок
+# размах выборок
 vRange <- diff(range(v))
 eRange <- diff(range(e))
 
-#длины интервалов
+# длины интервалов
 vIntLength <- vRange/numClass
 eIntLength <- eRange/numClass
 
-#границы интервалов
+# границы интервалов
 vInterv <- seq(from = min(v), to = max(v), by = vRange/numClass)
 eInterv <- seq(from = min(e), to = max(e), by = eRange/numClass)
 
-#интервальные ряды
+# интервальные ряды
 vIntSeq <- table(cut(v, vInterv, right = F, include.lowest = T))
 vIntSeq <- as.data.frame(vIntSeq)
 vIntSeq <- cbind(vIntSeq, vInterv[1:7] + (vRange/(2*numClass)))
@@ -47,16 +51,16 @@ eIntSeq <- cbind(eIntSeq, eInterv[1:7] + (eRange/(2*numClass)))
 colnames(eIntSeq) <- c('Intervals', 'Freq', "Mids")
 eIntSeq <- as.tbl(eIntSeq)
 
-#Эмпирические функции распределения
-#Абсолютная ЭФР
-## Это если определять F(x) = P(X < x) (так, как сам Середа определяет)
+# Эмпирические функции распределения
+# Абсолютная ЭФР
+# Если определять F(x) = P(X < x) (лекция Середы)
 plot(stepfun(vIntSeq$Mids, cumsum(c(0, vIntSeq$Freq)), right = F), 
      verticals = F,
      lab = c(30, 15, 8),
      main = "Абс. ЭФР для v",
-     ylab = "для F(x) = P(X < x)",
+     ylab = "F(x) = P(X < x)",
      xlab = "v", 
-     col = "hotpink4",
+     col = "darkgreen",
      lwd = 2,
      cex.points = 1.5,
      pch = 60,
@@ -66,14 +70,14 @@ axis(1, at = vIntSeq$Mids, labels = round(vIntSeq$Mids, digits = 1))
 axis(2, at = cumsum(c(0, vIntSeq$Freq)), 
      labels = cumsum(c(0, vIntSeq$Freq)), las = 1)
 
-## Это если определять F(x) = P(X <= x) (а так определяют в большинстве источников)
+## Это если определять F(x) = P(X <= x) (определяли раньше)
 plot(stepfun(vIntSeq$Mids, cumsum(c(0, vIntSeq$Freq)), right = T), 
      verticals = F,
      lab = c(30, 15, 8),
      main = "Абс. ЭФР для v",
      ylab = "для F(x) = P(X <= x)",
      xlab = "v", 
-     col = "hotpink4",
+     col = "darkgreen",
      lwd = 2,
      xaxt = "n",
      yaxt = "n")
@@ -81,14 +85,14 @@ axis(1, at = vIntSeq$Mids, labels = round(vIntSeq$Mids, digits = 1))
 axis(2, at = cumsum(c(0, vIntSeq$Freq)), 
      labels = cumsum(c(0, vIntSeq$Freq)), las = 1)
 
-## Это F(x) = P(X < x)
+# Это F(x) = P(X < x)
 plot(stepfun(eIntSeq$Mids, cumsum(c(0, eIntSeq$Freq)), right = F), 
      verticals = F, 
      lab = c(30, 15, 8),
      main = "Абс. ЭФР для E",
      ylab = "для F(x) = P(X < x)",
      xlab = "E", 
-     col = "purple4",
+     col = "darkblue",
      lwd = 2,
      cex.points = 1.5,
      pch = 60,
@@ -98,14 +102,14 @@ axis(1, at = eIntSeq$Mids, labels = round(eIntSeq$Mids, digits = 1))
 axis(2, at = cumsum(c(0, eIntSeq$Freq)), 
      labels = cumsum(c(0, eIntSeq$Freq)), las = 1)
 
-## Это F(x) = P(X <= x)
+# Это F(x) = P(X <= x)
 plot(stepfun(eIntSeq$Mids, cumsum(c(0, eIntSeq$Freq)), right = T), 
      verticals = F,
      lab = c(30, 15, 8),
      main = "Абс. ЭФР для E",
      ylab = "для F(x) = P(X <= x)",
      xlab = "E", 
-     col = "purple4",
+     col = "darkblue",
      lwd = 2,
      xaxt = "n",
      yaxt = "n")
@@ -113,15 +117,15 @@ axis(1, at = eIntSeq$Mids, labels = round(eIntSeq$Mids, digits = 1))
 axis(2, at = cumsum(c(0, eIntSeq$Freq)), 
      labels = cumsum(c(0, eIntSeq$Freq)), las = 1)
 
-#Относительная ЭФР
-## Это F(x) = P(X < x) для v
+# Относительная ЭФР
+# Это F(x) = P(X < x) для v
 plot(stepfun(vIntSeq$Mids, cumsum(c(0, vIntSeq$Freq))/N, right = F), 
      verticals = F, 
      lab = c(15, 5, 8),
      main = "Отн. ЭФР для v",
      ylab = "для F(x) = P(X < x)",
      xlab = "v", 
-     col = "hotpink4",
+     col = "darkgreen",
      lwd = 2,
      cex.points = 1.5,
      pch = 60,
@@ -131,14 +135,14 @@ axis(1, at = vIntSeq$Mids, labels = round(vIntSeq$Mids, digits = 2))
 axis(2, at = cumsum(c(0, vIntSeq$Freq))/N, 
      labels = round(cumsum(c(0, vIntSeq$Freq))/N, digits = 2), las = 1)
 
-## Это F(x) = P(X <= x) для v
+# Это F(x) = P(X <= x) для v
 plot(stepfun(vIntSeq$Mids, cumsum(c(0, vIntSeq$Freq))/N, right = T), 
      verticals = F,
      lab = c(15, 5, 8),
      main = "Отн. ЭФР для v",
      ylab = "для F(x) = P(X <= x)",
      xlab = "v", 
-     col = "hotpink4",
+     col = "darkgreen",
      lwd = 2,
      xaxt = "n",
      yaxt = "n")
@@ -146,14 +150,14 @@ axis(1, at = vIntSeq$Mids, labels = round(vIntSeq$Mids, digits = 2))
 axis(2, at = cumsum(c(0, vIntSeq$Freq))/N, 
      labels = round(cumsum(c(0, vIntSeq$Freq))/N, digits = 2), las = 1)
 
-## Это F(x) = P(X < x) для Е
+# Это F(x) = P(X < x) для Е
 plot(stepfun(eIntSeq$Mids, cumsum(c(0, eIntSeq$Freq))/N, right = F), 
      verticals = F, 
      lab = c(15, 5, 8),
      main = "Отн. ЭФР для E",
      ylab = "для F(x) = P(X < x)",
      xlab = "E", 
-     col = "purple4",
+     col = "darkblue",
      lwd = 2,
      cex.points = 1.5,
      pch = 60,
@@ -163,14 +167,14 @@ axis(1, at = eIntSeq$Mids, labels = round(eIntSeq$Mids, digits = 2))
 axis(2, at = cumsum(c(0, eIntSeq$Freq))/N, 
      labels = round(cumsum(c(0, eIntSeq$Freq))/N, digits = 2), las = 1)
 
-## Это F(x) = P(X <= x) для E
+# Это F(x) = P(X <= x) для E
 plot(stepfun(eIntSeq$Mids, cumsum(c(0, eIntSeq$Freq))/N, right = T), 
      verticals = F, 
      lab = c(15, 5, 8),
      main = "Отн. ЭФР для E",
      ylab = "для F(x) = P(X <= x)",
      xlab = "E", 
-     col = "purple4",
+     col = "darkblue",
      lwd = 2,
      xaxt = "n",
      yaxt = "n")
@@ -182,13 +186,14 @@ axis(2, at = cumsum(c(0, eIntSeq$Freq))/N,
 ###vecdf <- ecdf(rep(vInterv, vIntSeq$Freq), right = T)
 ###eecdf <- ecdf(rep(eIntSeq$Mids, eIntSeq$Freq))
 
-#Гистограммы
+# Гистограммы
 vhist <- hist(v, breaks = vInterv, right = F, include.lowest = T)
 #vhist$density <- vhist$density * vIntLength
 
 {
   plot(vhist, 
-       col = "navajowhite3",
+       #col = "honeydew",
+       col = "lightgreen",
        main = "Гистограмма для v",
        ylab = "Абс. частота",
        xlab = "v",
@@ -203,7 +208,8 @@ vhist <- hist(v, breaks = vInterv, right = F, include.lowest = T)
 {
   plot(vhist, 
        freq = F,
-       col = "lightgreen",
+       #col = "honeydew3",
+       col = "darkgreen",
        main = "Гистограмма для v",
        ylab = "",
        xlab = "v",
@@ -222,7 +228,7 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
 
 {
   plot(ehist, 
-       col = "moccasin",
+       col = "blue",
        main = "Гистограмма для E",
        ylab = "Абс. частота",
        xlab = "E",
@@ -240,7 +246,7 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        main = "Гистограмма для E",
        ylab = "",
        xlab = "E",
-       col = "mediumspringgreen",
+       col = "darkblue",
        xaxt = "n",
        yaxt = "n")
   mtext(text = "Плотность", side = 3, line = 0, 
@@ -251,7 +257,7 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        labels = round( c(0, ehist$density, 1), digits = 4 ) )
 }
 
-#Полигоны
+# Полигоны
 {
   plot(vhist$mids, vhist$counts,
        #  xlim = c(min(vhist$breaks), max(vhist$breaks)),
@@ -261,7 +267,6 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        ylab = "Частота", 
        main = "Частотный полигон для v", 
        pch = 19,
-       col = "royalblue4",
        xaxt = "n",
        yaxt = "n")
   axis(1, at = vIntSeq$Mids,
@@ -270,8 +275,8 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        labels = c(0, vhist$counts))
   polygon(vhist$mids[c(1, 1:7, 7)], 
           c(0, vhist$counts, 0),
-          border = "royalblue4",
-          col = "pink")
+          border = "darkgreen",
+          col = "honeydew")
 }
 
 {
@@ -283,7 +288,6 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        ylab = "", 
        main = "Полигон плотности для v", 
        pch = 19,
-       col = "palevioletred4",
        xaxt = "n",
        yaxt = "n")
   mtext(text = "Плотность", side = 3, line = 0, 
@@ -294,8 +298,8 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        labels = round( c(0, vhist$density, 1), digits = 4 ) )
   polygon(vhist$mids[c(1, 1:7, 7)], 
           c(0, vhist$density, 0),
-          border = "palevioletred4",
-          col = "peachpuff")
+          border = "darkgreen",
+          col = "lightgreen")
 }
 
 {
@@ -307,7 +311,6 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        ylab = "Частота", 
        main = "Частотный полигон для E", 
        pch = 19,
-       col = "tomato4",
        xaxt = "n",
        yaxt = "n")
   axis(1, at = eIntSeq$Mids,
@@ -316,8 +319,8 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        labels = c(0, ehist$counts))
   polygon(ehist$mids[c(1, 1:7, 7)], 
           c(0, ehist$counts, 0),
-          border = "tomato4",
-          col = "thistle2")
+          border = "darkblue",
+          col = "azure")
 }
 
 {
@@ -329,7 +332,6 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        ylab = "", 
        main = "Полигон плотности для E", 
        pch = 19,
-       col = "darkred",
        xaxt = "n",
        yaxt = "n")
   mtext(text = "Плотность", side = 3, line = 0, 
@@ -340,6 +342,6 @@ ehist <- hist(e, breaks = eInterv, right = F, include.lowest = T)
        labels = round( c(0, ehist$density, 1), digits = 4 ) )
   polygon(ehist$mids[c(1, 1:7, 7)], 
           c(0, ehist$density, 0),
-          border = "darkred",
-          col = "slategray1")
+          border = "darkblue",
+          col = "lightblue")
 }
