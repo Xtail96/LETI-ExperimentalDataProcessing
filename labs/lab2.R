@@ -15,12 +15,12 @@ vC <- vIntSeq$Mids[4]
 eC <- eIntSeq$Mids[4]
 
 # чисто для таблицы из отчета
-vIntSeq <- cbind(vIntSeq, step1 = (vIntSeq$ui * vIntSeq$Count))
-vIntSeq <- cbind(vIntSeq, step2 = (vIntSeq$ui * vIntSeq$step1))
-vIntSeq <- cbind(vIntSeq, step3 = (vIntSeq$ui * vIntSeq$step2))
-vIntSeq <- cbind(vIntSeq, step4 = (vIntSeq$ui * vIntSeq$step3))
+#vIntSeq <- cbind(vIntSeq, step1 = (vIntSeq$ui * vIntSeq$Count))
+#vIntSeq <- cbind(vIntSeq, step2 = (vIntSeq$ui * vIntSeq$step1))
+#vIntSeq <- cbind(vIntSeq, step3 = (vIntSeq$ui * vIntSeq$step2))
+#vIntSeq <- cbind(vIntSeq, step4 = (vIntSeq$ui * vIntSeq$step3))
 # (x_i + 1)^4 * n_i
-vIntSeq <- cbind(vIntSeq, check_ = ((vIntSeq$ui + 1)^4 * vIntSeq$Count))
+#vIntSeq <- cbind(vIntSeq, check_ = ((vIntSeq$ui + 1)^4 * vIntSeq$Count))
 
 
 #слагаемые первого условного момента
@@ -39,6 +39,10 @@ eIntSeq <- cbind(eIntSeq, M3 = (eIntSeq$ui * eIntSeq$M2))
 vIntSeq <- cbind(vIntSeq, M4 = (vIntSeq$ui * vIntSeq$M3))
 eIntSeq <- cbind(eIntSeq, M4 = (eIntSeq$ui * eIntSeq$M3))
 
+# проверочный столбец
+vIntSeq <- cbind(vIntSeq, check_ = ((vIntSeq$ui + 1)^4 * vIntSeq$Freq))
+eIntSeq <- cbind(eIntSeq, check_ = ((eIntSeq$ui + 1)^4 * eIntSeq$Freq))
+
 moments <- data.frame(
   v = colSums(vIntSeq[c("M1", "M2", "M3", "M4")]), 
   e = colSums(eIntSeq[c("M1", "M2", "M3", "M4")]))
@@ -53,20 +57,20 @@ moments <- rbind(moments, mean = c(moments$v[1] * vIntLength + vC,
                                    moments$e[1] * eIntLength + eC))
 
 #исправленная дисперсия (несмещенная)
-moments <- rbind(moments, var = c((moments$v[2] - moments$v[1]^2)*(vIntLength^2), 
+moments <- rbind(moments, dispersion = c((moments$v[2] - moments$v[1]^2)*(vIntLength^2), 
                                   (moments$e[2] - moments$e[1]^2)*(eIntLength^2)))
 
-moments["var",] <- moments["var",] *(N/(N-1))
+moments["corrected_dispersion",] <- moments["dispersion",] *(N/(N-1))
 
 #несмещенное средн.кв. отлонение
-moments <- rbind(moments, deviation = sqrt(moments["var",]))
+moments <- rbind(moments, deviation = sqrt(moments["corrected_dispersion",]))
 
 #оценка асимметрии
 moments <- rbind(moments,
-                 skew = (moments[3,] - 3*moments[2,]*moments[1,] + 2*(moments[1,]^3))*((c(vIntLength, eIntLength)/moments["deviation",])^3))
+                 asymmetry = (moments[3,] - 3*moments[2,]*moments[1,] + 2*(moments[1,]^3))*((c(vIntLength, eIntLength)/moments["deviation",])^3))
 
 #оценка эксцесса
 iod <- c(vIntLength, eIntLength)/moments["deviation",]
 iod <- iod^4
 m4 <- moments[4,] - 4*moments[3,]*moments[1,] + 6*moments[2,]*(moments[1,])^2 - 3*(moments[1,]^4)
-moments <- rbind(moments, kurt = m4*iod - 3)
+moments <- rbind(moments, excess = m4*iod - 3)
