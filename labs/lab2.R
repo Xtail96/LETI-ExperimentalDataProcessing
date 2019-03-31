@@ -14,6 +14,15 @@ eIntSeq <- cbind(eIntSeq, ui = (eIntSeq$Mids - eIntSeq$Mids[4])/eIntLength)
 vC <- vIntSeq$Mids[4]
 eC <- eIntSeq$Mids[4]
 
+# чисто для таблицы из отчета
+vIntSeq <- cbind(vIntSeq, step1 = (vIntSeq$ui * vIntSeq$Count))
+vIntSeq <- cbind(vIntSeq, step2 = (vIntSeq$ui * vIntSeq$step1))
+vIntSeq <- cbind(vIntSeq, step3 = (vIntSeq$ui * vIntSeq$step2))
+vIntSeq <- cbind(vIntSeq, step4 = (vIntSeq$ui * vIntSeq$step3))
+# (x_i + 1)^4 * n_i
+vIntSeq <- cbind(vIntSeq, check_ = ((vIntSeq$ui + 1)^4 * vIntSeq$Count))
+
+
 #слагаемые первого условного момента
 vIntSeq <- cbind(vIntSeq, M1 = (vIntSeq$ui * vIntSeq$Freq))
 eIntSeq <- cbind(eIntSeq, M1 = (eIntSeq$ui * eIntSeq$Freq))
