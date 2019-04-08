@@ -4,17 +4,19 @@ y <- 0.95
 ### распределение Стьюдента - симметричное, поэтому делим на два
 ty <- -qt((1-y)/2, df = N-1)
 
-conf <- (moments$v[7] * ty)/sqrt(N)
+deviation <- moments$v[8];
+conf <- (deviation * ty)/sqrt(N)
 ### доверительный интервал для мат.ожидания v
 vMeanConfInt <- c(moments$v[5] - conf, moments$v[5] + conf)
 
-conf <- (moments$e[7] * ty)/sqrt(N)
+deviation <- moments$e[8]
+conf <- (deviation * ty)/sqrt(N)
 ### доверительный интервал для мат.ожидания Е
 eMeanConfInt <- c(moments$e[5] - conf, moments$e[5] + conf) 
 
 #интервальные оценки для СКВО
-vDevConfInt <- sqrt((N-1)*moments["var","v"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
-eDevConfInt <- sqrt((N-1)*moments["var","e"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
+vDevConfInt <- sqrt((N-1)*moments["corrected_dispersion","v"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
+eDevConfInt <- sqrt((N-1)*moments["corrected_dispersion","e"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
 
 #проверка простой гипотезы о нормальном распределении
 a <- pnorm(vInterv[2:7], mean = moments["mean", "v"], sd = moments["deviation", "v"])
@@ -33,5 +35,6 @@ eHyp <- cbind(eHyp, ThCounts = eHyp$ThFreq * N)
 eChiSq <- sum( ((eHyp$Counts - eHyp$ThCounts)^2) / eHyp$ThCounts )
 ## a - уровень значимости, вероятность отклонить верную гипотезу
 a <- 0.05
+test <- qchisq(1-a, df = numClass - 3)
 if (eChiSq > qchisq(1-a, df = numClass - 3)) 'Reject at a = 0.05' else 'Accept at a = 0.05'
 
