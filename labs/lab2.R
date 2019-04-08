@@ -43,6 +43,14 @@ eIntSeq <- cbind(eIntSeq, M4 = (eIntSeq$ui * eIntSeq$M3))
 vIntSeq <- cbind(vIntSeq, check_ = ((vIntSeq$ui + 1)^4 * vIntSeq$Freq))
 eIntSeq <- cbind(eIntSeq, check_ = ((eIntSeq$ui + 1)^4 * eIntSeq$Freq))
 
+# чисто для таблицы из отчета
+my_eIntSeq <- cbind(eIntSeq, step1 = (eIntSeq$ui * eIntSeq$Count))
+my_eIntSeq <- cbind(my_eIntSeq, step2 = (my_eIntSeq$ui * my_eIntSeq$step1))
+my_eIntSeq <- cbind(my_eIntSeq, step3 = (my_eIntSeq$ui * my_eIntSeq$step2))
+my_eIntSeq <- cbind(my_eIntSeq, step4 = (my_eIntSeq$ui * my_eIntSeq$step3))
+# (x_i + 1)^4 * n_i
+my_eIntSeq <- cbind(my_eIntSeq, check_ = ((my_eIntSeq$ui + 1)^4 * my_eIntSeq$Count))
+
 moments <- data.frame(
   v = colSums(vIntSeq[c("M1", "M2", "M3", "M4")]), 
   e = colSums(eIntSeq[c("M1", "M2", "M3", "M4")]))
@@ -50,6 +58,9 @@ moments <- data.frame(
 ###проверка
 ## vIntSeq$M4 + 4*vIntSeq$M3 + 6*vIntSeq$M2 + 4*vIntSeq$M1 + vIntSeq$Freq
 ## ((vIntSeq$ui + 1)^4) * vIntSeq$Freq
+#
+## sum(eIntSeq$M4 + 4*eIntSeq$M3 + 6*eIntSeq$M2 + 4*eIntSeq$M1 + eIntSeq$Freq)
+# sum(((eIntSeq$ui + 1)^4) * eIntSeq$Freq)
 ###
 
 #выборочное среднее
