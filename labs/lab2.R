@@ -67,14 +67,15 @@ moments <- data.frame(
 moments <- rbind(moments, mean = c(moments$v[1] * vIntLength + vC, 
                                    moments$e[1] * eIntLength + eC))
 
-#исправленная дисперсия (несмещенная)
+# дисперсия
 moments <- rbind(moments, dispersion = c((moments$v[2] - moments$v[1]^2)*(vIntLength^2), 
                                   (moments$e[2] - moments$e[1]^2)*(eIntLength^2)))
-
-moments["corrected_dispersion",] <- moments["dispersion",] *(N/(N-1))
+#исправленная дисперсия (несмещенная)
+moments["var",] <- moments["dispersion",] * (N/(N-1))
+moments <- moments[-c(6),]
 
 #несмещенное средн.кв. отлонение
-moments <- rbind(moments, deviation = sqrt(moments["corrected_dispersion",]))
+moments <- rbind(moments, deviation = sqrt(moments["var",]))
 
 #оценка асимметрии
 moments <- rbind(moments,

@@ -15,8 +15,8 @@ conf <- (deviation * ty)/sqrt(N)
 eMeanConfInt <- c(moments$e[5] - conf, moments$e[5] + conf) 
 
 #интервальные оценки для СКВО
-vDevConfInt <- sqrt((N-1)*moments["corrected_dispersion","v"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
-eDevConfInt <- sqrt((N-1)*moments["corrected_dispersion","e"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
+vDevConfInt <- sqrt((N-1)*moments["var","v"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
+eDevConfInt <- sqrt((N-1)*moments["var","e"]/qchisq(c((1+y)/2, (1-y)/2), df = N-1))
 
 #проверка простой гипотезы о нормальном распределении
 a <- pnorm(vInterv[2:7], mean = moments["mean", "v"], sd = moments["deviation", "v"])
