@@ -4,7 +4,7 @@ xv <- function(y) moments["mean", "v"] + rb1 * (moments["deviation", "v"]/moment
   plot(sample)
   l <- legend("bottomright", 
               legend = c("y(x)", "x(y)"), 
-              col = c("darkorchid4", "darkseagreen4"),
+              col = c("red", "blue"),
               lwd = 3,
               plot = T)
 }
@@ -27,17 +27,17 @@ xv <- function(y) moments["mean", "v"] + rb1 * (moments["deviation", "v"]/moment
         n = 10000,
         add = T,
         lwd = 2,
-        col = "darkorchid4")
+        col = "red")
   lines(xv( seq(min(e), max(e), by = 0.01) ),  seq(min(e), max(e), by = 0.01),
         type = "l",
         lwd = 2,
-        col = "darkseagreen4")
+        col = "blue")
   
   legend(x = c(l$rect$left, l$rect$left + l$rect$w),
          y = c(l$rect$top, l$rect$top - l$rect$h),
          legend = c("y(x)", "x(y)"), 
          bty = "n",
-         col = c("darkorchid4", "darkseagreen4"),
+         col = c("red", "blue"),
          lwd = 3,
          y.intersp = 0.5,
          title = "Прямые лин.регрессии",
@@ -76,6 +76,7 @@ Dy_out <- sum(xi$yHits * (xi$Avg_y_for_Xint - moments["mean", "e"])^2)/N
 # корреляционное отношение
 #Dy_out/(Dy_out + Dy_in)
 etaSq <- Dx_out/(Dx_out + Dx_in)
+etaSq_ <- Dy_out/(Dy_out + Dy_in)
 sqrt(Dx_out/(Dx_out + Dx_in)) > rb1
 
 
@@ -114,7 +115,7 @@ t <- c(t,
          y = c(l$rect$top, l$rect$top - l$rect$h),
          inset = 0,
          legend = c("y(x)", "x(y)"), 
-         col = c("turquoise4", "sienna4"),
+         col = c("red", "blue"),
          bty = "n",
          title = "Параболы",
          lwd = 3,
@@ -130,10 +131,10 @@ t <- c(t,
         n = 10000,
         add = T,
         lwd = 2,
-        col = "turquoise4")
+        col = "red")
   lines(sapply(seq(min(e), max(e), by = 0.01), function(x) t[4]*x^2 + t[5]*x + t[6]),  
         seq(min(e), max(e), by = 0.01),
         type = "l",
         lwd = 2,
-        col = "sienna4")
+        col = "blue")
 }
