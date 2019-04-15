@@ -1,6 +1,8 @@
 #масштабирование выборки
 ##стандартизация (z-score)
 
+## require(dplyr)
+
 ######################t(sample) - as.vector(moments["mean",], mode = "numeric")
 
 zscore <- data.frame(v = (sample$v - moments["mean","v"])/moments["deviation","v"], 
